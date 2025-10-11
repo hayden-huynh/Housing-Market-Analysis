@@ -35,10 +35,9 @@ def send_curl_request(url, useProxy=False):
 
 
 def get_curl_session():
-    browser = random.choice(["chrome", "edge", "safari", "firefox"])
     session = requests.Session(
-        impersonate=browser,
-        headers=headers,
+        impersonate=random.choice(["chrome", "edge", "safari", "firefox"]),
+        # headers=headers,
         proxies=proxies,
         verify=False,
     )
