@@ -5,14 +5,14 @@ CREATE DATABASE IF NOT EXISTS mart;
 
 -- Raw, one big table
 CREATE TABLE IF NOT EXISTS raw.realestate_housing_raw (
-    date Date,
-    property_id String,
+    date Date, -- fact/dim
+    property_id String, -- fact/dim
     state LowCardinality(String),
     city String,
     neighborhood Nullable(String),
     zip String,
-    price UInt32,
-    status Nullable(String),
+    price UInt32, -- fact
+    status Nullable(String), -- fact
     property_type LowCardinality(String),
     lat Float64,
     long Float64,

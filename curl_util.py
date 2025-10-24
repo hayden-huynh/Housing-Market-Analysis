@@ -23,6 +23,7 @@ headers = {
     "Sec-Fetch-Dest": "document",
 }
 
+
 def send_curl_request(url, useProxy=False):
     browser = random.choice(["chrome", "edge", "safari", "firefox"])
     resp = requests.get(

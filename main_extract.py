@@ -2,34 +2,76 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from minio_util import upload_json
 from queue import Queue
+from curl_cffi import Session
 import re
+import math
 import traceback
 import asyncio
 import curl_util
 import json
+import time
+import random
 
 
-def extract_listing_urls(session, zip):
+def extract_listing_urls(session: Session, zip):
     property_urls = []
-    try:
-        page = 1
-        while True:
+    num_page = 0
+
+    # Calculate the total number of pages available
+    while True:
+        try:
             response = session.get(
-                f"https://www.trulia.com/{zip[0]}/{zip[1]}/{page}_p/"
+                f"https://www.trulia.com/{zip[0]}/{zip[1]}/", http_version="v1"
             )
             soup = BeautifulSoup(response.text, "lxml")
-            ld_json = soup.find("script", type="application/ld+json")
-            data = json.loads(ld_json.string)
-            for listing in data["mainEntity"]["itemListElement"]:
-                property_urls.append(listing["item"]["offers"][0]["url"])
+            general_json = soup.find("script", type="application/json")
+            general_data = json.loads(general_json.string)
+            num_page = math.ceil(
+                int(
+                    general_data["props"]["_page"]["searchData"]["homeCounts"][
+                        "resultCount"
+                    ]["formattedValue"]
+                )
+                / 40
+            )
+            break
+        except Exception as e:
+            print(f"Caught Error: {e}")
+            traceback.print_exc()
+            time.sleep(random.uniform(4.0, 8.0))
 
-            if not soup.find("li", {"data-testid": "pagination-next-page"}):
-                return property_urls
-            else:
-                page += 1
-    except Exception as e:
-        print(f"Caught Error: {e}")
-        return []
+    for page in range(1, num_page + 1):
+        while True:
+            try:
+                response = session.get(
+                    f"https://www.trulia.com/{zip[0]}/{zip[1]}/{page}_p/",
+                    http_version="v1",
+                )
+                soup = BeautifulSoup(response.text, "lxml")
+                ld_json = soup.find(
+                    "script",
+                    attrs={
+                        "type": "application/ld+json",
+                        "data-testid": "srp-seo-collection-schema",
+                    },
+                )
+                data = json.loads(ld_json.string)
+                listings = data["mainEntity"]["itemListElement"]
+                for listing in listings:
+                    offer = listing["item"]["offers"][0]
+                    url = offer.get("url", None)
+                    if url:
+                        property_urls.append(url)
+
+                time.sleep(random.uniform(4.0, 8.0))
+                break
+
+            except Exception as e:
+                print(f"Caught Error: {e}")
+                traceback.print_exc()
+                time.sleep(random.uniform(4.0, 8.0))
+
+    return property_urls
 
 
 def get_pairs(attrList):
@@ -44,10 +86,10 @@ def get_values_only(attrList):
     return [i["formattedValue"] for i in attrList if "formattedValue" in i]
 
 
-def extract_housing_data(session, url):
+def extract_housing_data(session: Session, url):
     try:
-        response = session.get(url)
-        if response.status_code == 200:
+        response = session.get(url, timeout=60, http_version="v1")
+        if response.status_code != 403:
             soup = BeautifulSoup(response.text, "lxml")
             app_json = soup.find("script", type="application/json")
             all_data = json.loads(app_json.string)["props"]
@@ -86,7 +128,9 @@ def extract_housing_data(session, url):
                             == "Levels, Entrance, & Accessibility"
                         ):
                             pairs = get_pairs(sub_sect["attributes"])
-                            selected_data["story_count"] = float(pairs["Stories"])
+                            selected_data["story_count"] = (
+                                float(pairs["Stories"]) if "Stories" in pairs else None
+                            )
                             selected_data["level_count"] = pairs.get("Levels", None)
                         else:
                             continue
@@ -206,6 +250,8 @@ async def main_extract():
                 data.append(json.dumps(property_json))
             else:
                 retry_q.put(url)
+            time.sleep(random.uniform(2.0, 4.0))
+
         while not retry_q.empty():
             property_json = extract_housing_data(session, retry_q.get())
             if not property_json:
