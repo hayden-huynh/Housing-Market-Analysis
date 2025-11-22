@@ -1,0 +1,14 @@
+[0m13:22:27.405465 [debug] [MainThread]: Got an exception trying to initialize tracking
+
+
+============================== 13:22:27.411382 | f96137b3-2647-473c-a8d6-46e83b02bb92 ==============================
+[0m13:22:27.411382 [info ] [MainThread]: Running with dbt=1.10.13
+[0m13:22:27.411881 [debug] [MainThread]: running dbt with arguments {'empty': 'False', 'profiles_dir': '/home/hayden_huynh/.dbt', 'version_check': 'True', 'no_print': 'None', 'printer_width': '80', 'quiet': 'False', 'send_anonymous_usage_stats': 'True', 'fail_fast': 'False', 'log_cache_events': 'False', 'static_parser': 'True', 'indirect_selection': 'eager', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'log_path': 'logs', 'invocation_command': 'dbt run --select mart_latest_listing', 'debug': 'False', 'partial_parse': 'True', 'use_experimental_parser': 'False', 'write_json': 'True', 'use_colors': 'True', 'cache_selected_only': 'False', 'introspect': 'True', 'warn_error': 'None', 'target_path': 'None', 'log_format': 'default'}
+[0m13:22:27.412249 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /home/hayden_huynh/Projects/Housing-Market-Analysis/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m13:22:27.413119 [debug] [MainThread]: Resource report: {"command_name": "run", "command_success": false, "command_wall_clock_time": 0.05372876, "process_in_blocks": "56", "process_kernel_time": 0.193504, "process_mem_max_rss": "98568", "process_out_blocks": "8", "process_user_time": 1.005463}
+[0m13:22:27.413575 [debug] [MainThread]: Command `dbt run` failed at 13:22:27.413448 after 0.05 seconds
+[0m13:22:27.413845 [debug] [MainThread]: Flushing usage events

@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from airflow.sdk import DAG
 from airflow.providers.standard.operators.python import PythonOperator
 from airflow.providers.standard.operators.bash import BashOperator
+from airflow.sensors.external_task import ExternalTaskSensor
 import sys
 
 sys.path.insert(0, "/home/hayden_huynh/Projects/Housing-Market-Analysis")
@@ -16,8 +17,8 @@ default_args = {
     "email_on_failure": False,
     "email_on_retry": False,
     # 'queue': 'bash_queue',
-    # 'pool': 'backfill',
-    # 'priority_weight': 10,
+    # "pool": "default_pool",
+    "priority_weight": 1,
     # 'end_date': datetime(2016, 1, 1),
     # 'wait_for_downstream': False,
     # 'execution_timeout': timedelta(seconds=300),
@@ -33,11 +34,21 @@ with DAG(
     "trulia_housing_market",
     default_args=default_args,
     description="ELT pipeline for housing properties listed on Trulia",
-    schedule="0 15 * * *",
-    start_date=datetime(2025, 10, 15, 10, 0),
+    schedule="0 14 * * *",
+    start_date=datetime(2025, 11, 1, 0, 0),
     catchup=False,
     tags=["ELT", "Trulia", "Housing Properties"],
 ) as dag:
+    # wait_for_car_dag = ExternalTaskSensor(
+    #     task_id="wait_for_car_dag",
+    #     external_dag_id="cargurus_used_cars",  # ID of DAG 1
+    #     external_task_id="load_data",  # Wait for this specific task in dag_1
+    #     mode="poke",  # Continuously check for success
+    #     timeout=600,  # Timeout in seconds if dag_1 doesn't complete
+    #     poke_interval=5,  # Check every 5 seconds
+    #     allowed_states=["success"],
+    #     failed_states=["failed"],
+    # )
 
     hma_extract_data = BashOperator(
         task_id="hma_extract_data",

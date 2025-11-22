@@ -250,7 +250,7 @@ async def main_extract():
                 data.append(json.dumps(property_json))
             else:
                 retry_q.put(url)
-            time.sleep(random.uniform(2.0, 4.0))
+            time.sleep(random.uniform(2.0, 3.75))
 
         while not retry_q.empty():
             property_json = extract_housing_data(session, retry_q.get())
