@@ -18,7 +18,6 @@ def main_load():
         password=CLICKHOUSE_PWD,
     )
 
-    # clickhouse_client.command("SELECT 1")
     clickhouse_client.command(
         """
         TRUNCATE TABLE raw.realestate_housing_raw

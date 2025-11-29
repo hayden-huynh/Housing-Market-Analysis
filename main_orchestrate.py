@@ -16,18 +16,7 @@ default_args = {
     "retry_delay": timedelta(minutes=1),
     "email_on_failure": False,
     "email_on_retry": False,
-    # 'queue': 'bash_queue',
-    # "pool": "default_pool",
     "priority_weight": 1,
-    # 'end_date': datetime(2016, 1, 1),
-    # 'wait_for_downstream': False,
-    # 'execution_timeout': timedelta(seconds=300),
-    # 'on_failure_callback': some_function, # or list of functions
-    # 'on_success_callback': some_other_function, # or list of functions
-    # 'on_retry_callback': another_function, # or list of functions
-    # 'sla_miss_callback': yet_another_function, # or list of functions
-    # 'on_skipped_callback': another_function, #or list of functions
-    # 'trigger_rule': 'all_success'
 }
 
 with DAG(
@@ -39,17 +28,6 @@ with DAG(
     catchup=False,
     tags=["ELT", "Trulia", "Housing Properties"],
 ) as dag:
-    # wait_for_car_dag = ExternalTaskSensor(
-    #     task_id="wait_for_car_dag",
-    #     external_dag_id="cargurus_used_cars",  # ID of DAG 1
-    #     external_task_id="load_data",  # Wait for this specific task in dag_1
-    #     mode="poke",  # Continuously check for success
-    #     timeout=600,  # Timeout in seconds if dag_1 doesn't complete
-    #     poke_interval=5,  # Check every 5 seconds
-    #     allowed_states=["success"],
-    #     failed_states=["failed"],
-    # )
-
     hma_extract_data = BashOperator(
         task_id="hma_extract_data",
         bash_command="cd /home/hayden_huynh/Projects/Housing-Market-Analysis/ && source ./venv/bin/activate && python main_extract.py",
