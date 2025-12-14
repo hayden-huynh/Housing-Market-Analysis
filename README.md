@@ -9,8 +9,9 @@
     - Staging data is raw data after fields have been necessarily transformed for later easier analysis. Also in this step, the one raw data table is splitted into a fact table holding frequently-changing fields like price, and a dimension table holding housing property attribute data like year built, bedroom count, bathroom count, floor area, etc.
     - Moving from staging to mart layer, newly found data is appended, while existing data is refreshed with more updated versions. This final layer is also where the data is ready for analysis
 - `main_orchestrate.py` holds the definition of the [Airflow](https://airflow.apache.org/) DAG used to schedule the pipeline automation. This ELT pipeline is configured to run once on a daily basis, hence establishing day-by-day snapshots of the housing market
+- The data pipeline operates on a local server, with the object store and database components running in Docker containers, and scripts are scheduled to automatically execute by a local Apache Airflow instance.
 
 ## Data Analysis & Visualization
 - A market summary report with interactive visualizations was performed in [Housing-Market-Report.pbix](Housing-Market-Report.pbix) using Power BI and its data modeling feature (Please download to use the interactive visualization feature)
 ![](power-bi-report.png)
-- Deep-dive data analyses along with visualizations and filters were performed in [Housing-Market-Analysis](Housing-Market-Analysis.xlsx) using Power Query and PowerPivot with DAX in Microsoft Excel
+- Deep-dive data analyses along with visualizations and filters were performed in [Housing-Market-Analysis](https://1drv.ms/x/c/9d61684c59cab735/IQA4Uf_jkqtoT4xARkvjVG7jAQHhYWNDvb8b1FL1ECK7EAE?e=Ifnz3g) using Power Query and PowerPivot with DAX in Microsoft Excel
